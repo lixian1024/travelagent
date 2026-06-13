@@ -15,6 +15,7 @@ import {
   Download,
   Home,
   Languages,
+  LogOut,
   Map,
   MapPin,
   MessageCircle,
@@ -36,10 +37,20 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 type Tab = "today" | "agent" | "prepare" | "offline" | "me";
 type AgentMode = "ask" | "menu" | "driver" | "problem";
+
+export type AuthUser = {
+  id: string;
+  email: string;
+  name: string;
+  avatarUrl: string;
+  provider: string;
+};
 
 type InstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -522,14 +533,47 @@ function OfflineScreen() {
   );
 }
 
-function MeScreen() {
+function MeScreen({
+  authConfigured,
+  user,
+  signingOut,
+  onSignOut,
+}: {
+  authConfigured: boolean;
+  user: AuthUser | null;
+  signingOut: boolean;
+  onSignOut: () => void;
+}) {
+  const displayName = user?.name || "Prototype Traveler";
+  const initial = displayName.charAt(0).toUpperCase();
+
   return (
     <div className="screen-in space-y-5">
       <section className="flex items-center gap-4 bg-ink p-5 text-white">
-        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-cinnabar font-display text-xl font-black">A</span>
+        {user?.avatarUrl ? (
+          <Image
+            src={user.avatarUrl}
+            alt=""
+            width={56}
+            height={56}
+            unoptimized
+            className="h-14 w-14 rounded-full object-cover"
+          />
+        ) : (
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-cinnabar font-display text-xl font-black">
+            {initial}
+          </span>
+        )}
         <div>
-          <h1 className="font-display text-2xl font-black">Alex Morgan</h1>
-          <p className="mt-1 text-[10px] text-white/45">Beijing → Shanghai · Jun 17–24</p>
+          <h1 className="font-display text-2xl font-black">{displayName}</h1>
+          <p className="mt-1 text-[10px] text-white/45">
+            {user?.email || "Beijing → Shanghai · Jun 17–24"}
+          </p>
+          {user?.provider && (
+            <p className="mt-1 text-[9px] font-bold uppercase tracking-wider text-[#f1dfbd]">
+              Signed in with {user.provider === "facebook" ? "Meta" : user.provider}
+            </p>
+          )}
         </div>
       </section>
       <section>
@@ -582,6 +626,17 @@ function MeScreen() {
         About China Travel Agent
         <ArrowRight className="h-4 w-4" />
       </Link>
+      {authConfigured && (
+        <button
+          type="button"
+          onClick={onSignOut}
+          disabled={signingOut}
+          className="flex w-full items-center justify-between border border-cinnabar/25 bg-[#fff3ed] p-4 text-left text-xs font-bold text-cinnabar disabled:opacity-50"
+        >
+          {signingOut ? "Signing out..." : "Sign out"}
+          <LogOut className="h-4 w-4" />
+        </button>
+      )}
     </div>
   );
 }
@@ -624,11 +679,18 @@ function GuideSheet({ onClose }: { onClose: () => void }) {
   );
 }
 
-export default function TravelAgentApp() {
+export default function TravelAgentApp({
+  authConfigured,
+  user,
+}: {
+  authConfigured: boolean;
+  user: AuthUser | null;
+}) {
   const [activeTab, setActiveTab] = useState<Tab>("today");
   const [online, setOnline] = useState(true);
   const [guideOpen, setGuideOpen] = useState(false);
   const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null);
+  const [signingOut, setSigningOut] = useState(false);
 
   useEffect(() => {
     const handleOnline = () => setOnline(true);
@@ -660,25 +722,51 @@ export default function TravelAgentApp() {
     setInstallPrompt(null);
   }
 
-  const screen = useMemo(() => {
+  async function signOut() {
+    if (!authConfigured) return;
+    setSigningOut(true);
+
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    window.location.assign("/login");
+  }
+
+  const screen = (() => {
     if (activeTab === "agent") return <AgentScreen onGuide={() => setGuideOpen(true)} />;
     if (activeTab === "prepare") return <PrepareScreen />;
     if (activeTab === "offline") return <OfflineScreen />;
-    if (activeTab === "me") return <MeScreen />;
+    if (activeTab === "me") {
+      return (
+        <MeScreen
+          authConfigured={authConfigured}
+          user={user}
+          signingOut={signingOut}
+          onSignOut={signOut}
+        />
+      );
+    }
     return (
       <TodayScreen
         openAgent={() => setActiveTab("agent")}
         openOffline={() => setActiveTab("offline")}
       />
     );
-  }, [activeTab]);
+  })();
 
   return (
     <div className="min-h-dvh bg-[#e7e2d8]">
       <div className="mx-auto min-h-dvh max-w-md bg-paper shadow-[0_0_80px_rgba(19,18,15,0.12)]">
         <AppHeader online={online} onInstall={installApp} canInstall={Boolean(installPrompt)} />
 
-        <main className="px-4 pb-[calc(92px+env(safe-area-inset-bottom))] pt-4">{screen}</main>
+        <main className="px-4 pb-[calc(92px+env(safe-area-inset-bottom))] pt-4">
+          {!authConfigured && (
+            <div className="mb-4 border border-[#b98b34]/30 bg-[#fff8e8] p-3 text-[10px] leading-4 text-ink/60">
+              <span className="font-bold text-ink">Prototype mode.</span> Add Supabase environment
+              variables to enable Google and Meta sign-in.
+            </div>
+          )}
+          {screen}
+        </main>
 
         <nav className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-md border-t border-ink/10 bg-paper/95 px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl" aria-label="App navigation">
           <div className="grid grid-cols-5">
