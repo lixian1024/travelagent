@@ -73,6 +73,14 @@ button {
   animation: agent-panel-in 320ms ease-out both;
 }
 
+.screen-in {
+  animation: screen-in 220ms ease-out both;
+}
+
+.sheet-in {
+  animation: sheet-in 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 @keyframes reveal-up {
   from {
     opacity: 0;
@@ -95,13 +103,35 @@ button {
   }
 }
 
+@keyframes screen-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
 
   .reveal-up,
-  .agent-panel-in {
+  .agent-panel-in,
+  .screen-in,
+  .sheet-in {
     animation: none;
   }
 }

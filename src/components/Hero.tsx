@@ -35,11 +35,11 @@ export default function Hero() {
           </p>
 
           <div className="reveal-up mt-10 flex flex-col gap-3 sm:flex-row [animation-delay:240ms]">
-            <a
-              href="#agent"
-              className="group flex min-h-14 items-center justify-center gap-3 bg-ink px-7 text-sm font-bold text-white transition hover:bg-cinnabar"
-            >
-              Meet your travel agent
+              <a
+                href="/app"
+                className="group flex min-h-14 items-center justify-center gap-3 bg-ink px-7 text-sm font-bold text-white transition hover:bg-cinnabar"
+              >
+                Open the app prototype
               <ArrowDownRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:translate-y-1" />
             </a>
             <a

@@ -48,10 +48,10 @@ export default function Header() {
             EN / 中文
           </span>
           <a
-            href="#agent"
+            href="/app"
             className="bg-ink px-5 py-3 text-xs font-bold text-white transition hover:bg-cinnabar"
           >
-            Try the agent
+            Open the app
           </a>
         </div>
 
@@ -83,11 +83,11 @@ export default function Header() {
               </a>
             ))}
             <a
-              href="#agent"
+              href="/app"
               onClick={() => setMenuOpen(false)}
               className="mt-5 bg-cinnabar px-5 py-4 text-center text-sm font-bold text-white"
             >
-              Try the agent
+              Open the app
             </a>
           </div>
         </nav>
