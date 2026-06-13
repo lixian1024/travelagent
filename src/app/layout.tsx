@@ -1,28 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "China Travel Guide - Your Gateway to China",
+  title: "China Travel Agent - Your Digital Local Guide in China",
   description:
-    "Plan your trip to China with ease. Get help with itineraries, guides, apps, internet access, and more. We make traveling in China simple for foreigners.",
+    "A context-aware digital local guide for foreign travelers in China. Prepare your apps before departure, understand what is around you, solve travel problems, and connect with a real local guide.",
   keywords: [
-    "China travel",
-    "travel to China",
-    "China guide",
-    "China tourism",
-    "visit China",
-    "China trip planner",
+    "China travel agent",
+    "China local guide",
+    "AI travel assistant China",
+    "China travel apps",
+    "China menu translation",
+    "China travel preparation",
   ],
 };
 
@@ -32,11 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" className="h-full antialiased">
+      <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );
 }

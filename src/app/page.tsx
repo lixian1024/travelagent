@@ -1,9 +1,12 @@
+import AgentDemo from "@/components/AgentDemo";
+import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import TripPlannerForm from "@/components/TripPlannerForm";
-import FAQ from "@/components/FAQ";
-import Contact from "@/components/Contact";
-import Footer from "@/components/Footer";
+import {
+  ContextAndServicesSection,
+  HumanGuideSection,
+  JourneySection,
+} from "@/components/ProductStory";
 
 export default function Home() {
   return (
@@ -11,9 +14,10 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
-        <TripPlannerForm />
-        <FAQ />
-        <Contact />
+        <JourneySection />
+        <AgentDemo />
+        <ContextAndServicesSection />
+        <HumanGuideSection />
       </main>
       <Footer />
     </>

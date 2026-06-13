@@ -1,90 +1,97 @@
 "use client";
 
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
 const navLinks = [
-  { href: "#plan", label: "Plan Your Trip" },
-  { href: "#faq", label: "Travel Tips" },
-  { href: "#contact", label: "Contact" },
+  { href: "#journey", label: "How it works" },
+  { href: "#agent", label: "Live agent" },
+  { href: "#context", label: "Why context" },
+  { href: "#services", label: "Local services" },
+  { href: "#guides", label: "Local guides" },
 ];
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <a href="#" className="flex items-center gap-2">
-            <span className="text-2xl">🇨🇳</span>
-            <span className="text-xl font-bold text-gray-900">
-              China<span className="text-red-600">Travel</span>
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-ink/10 bg-paper/90 backdrop-blur-xl">
+      <div className="mx-auto flex h-20 max-w-[1440px] items-center justify-between px-5 md:px-10 lg:px-16">
+        <a href="#" className="flex items-center gap-3" aria-label="China Travel Agent home">
+          <span className="flex h-9 w-9 items-center justify-center bg-cinnabar font-display text-lg font-black text-white">
+            中
+          </span>
+          <span className="leading-none">
+            <strong className="block font-display text-base tracking-tight text-ink">
+              China Travel
+            </strong>
+            <span className="mt-1 block text-[9px] font-bold uppercase tracking-[0.25em] text-ink/45">
+              Local Agent
             </span>
-          </a>
+          </span>
+        </a>
 
-          <nav className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="text-sm font-medium text-gray-600 hover:text-red-600 transition-colors"
-              >
-                {link.label}
-              </a>
-            ))}
+        <nav className="hidden items-center gap-4 md:flex lg:gap-6" aria-label="Main navigation">
+          {navLinks.map((link) => (
             <a
-              href="#plan"
-              className="bg-red-600 text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-red-700 transition-colors"
+              key={link.href}
+              href={link.href}
+              className="text-xs font-bold text-ink/60 transition hover:text-cinnabar"
             >
-              Start Planning
+              {link.label}
             </a>
-          </nav>
+          ))}
+        </nav>
 
-          <button
-            className="md:hidden p-2"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Toggle menu"
+        <div className="hidden items-center gap-4 xl:flex">
+          <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-ink/40">
+            EN / 中文
+          </span>
+          <a
+            href="#agent"
+            className="bg-ink px-5 py-3 text-xs font-bold text-white transition hover:bg-cinnabar"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              {menuOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              )}
-            </svg>
-          </button>
+            Try the agent
+          </a>
         </div>
 
-        {menuOpen && (
-          <nav className="md:hidden pb-4 border-t border-gray-100 pt-4 flex flex-col gap-3">
+        <button
+          type="button"
+          className="flex h-11 w-11 items-center justify-center border border-ink/15 md:hidden"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((current) => !current)}
+        >
+          {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+      </div>
+
+      {menuOpen && (
+        <nav
+          className="border-t border-ink/10 bg-paper px-5 py-6 md:hidden"
+          aria-label="Mobile navigation"
+        >
+          <div className="mx-auto flex max-w-[1440px] flex-col">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-gray-600 hover:text-red-600 transition-colors"
+                className="border-b border-ink/10 py-4 font-display text-2xl font-bold text-ink"
                 onClick={() => setMenuOpen(false)}
               >
                 {link.label}
               </a>
             ))}
-          </nav>
-        )}
-      </div>
+            <a
+              href="#agent"
+              onClick={() => setMenuOpen(false)}
+              className="mt-5 bg-cinnabar px-5 py-4 text-center text-sm font-bold text-white"
+            >
+              Try the agent
+            </a>
+          </div>
+        </nav>
+      )}
     </header>
   );
 }
