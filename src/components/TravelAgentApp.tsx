@@ -14,6 +14,7 @@ import {
   LogOut,
   Map,
   MapPin,
+  MessageCircle,
   Navigation,
   Pencil,
   Phone,
@@ -1312,6 +1313,10 @@ function MeScreen({
   const [savingTripContext, setSavingTripContext] = useState(false);
   const [tripContextError, setTripContextError] = useState("");
   const [customCitiesInput, setCustomCitiesInput] = useState("");
+  const [feedback, setFeedback] = useState("");
+  const [submittingFeedback, setSubmittingFeedback] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState("");
+  const [feedbackError, setFeedbackError] = useState("");
 
   useEffect(() => {
     if (!authConfigured || !user) {
@@ -1406,6 +1411,41 @@ function MeScreen({
     }
 
     setSavingTripContext(false);
+  }
+
+  async function submitFeedback() {
+    const content = feedback.trim();
+
+    if (!content) {
+      setFeedbackError("Please write your feedback before submitting.");
+      return;
+    }
+
+    if (!authConfigured || !user) {
+      setFeedbackError("Please sign in before submitting feedback.");
+      return;
+    }
+
+    setSubmittingFeedback(true);
+    setFeedbackError("");
+    setFeedbackMessage("");
+
+    const supabase = createClient();
+    const { error } = await supabase.from("user_feedback").insert({
+      user_id: user.id,
+      content,
+      app_version: "0.1.0",
+      page_path: "/app#me",
+    });
+
+    if (error) {
+      setFeedbackError("Your feedback could not be sent. Please try again.");
+    } else {
+      setFeedback("");
+      setFeedbackMessage("Thank you. Your feedback has been sent.");
+    }
+
+    setSubmittingFeedback(false);
   }
 
   if (editingTripContext) {
@@ -2040,6 +2080,61 @@ function MeScreen({
           </div>
         </div>
       </section>
+      <section className="border border-ink/15 bg-[#f1dfbd] p-4">
+        <div className="flex items-start gap-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center bg-ink text-white">
+            <MessageCircle className="h-4 w-4" />
+          </span>
+          <div>
+            <p className="text-xs font-bold">Share feedback</p>
+            <p className="mt-1 text-[10px] leading-4 text-ink/50">
+              Tell us what is useful, frustrating, confusing, or missing. Every kind of
+              feedback helps improve the Agent.
+            </p>
+          </div>
+        </div>
+        <form
+          className="mt-4"
+          onSubmit={(event) => {
+            event.preventDefault();
+            void submitFeedback();
+          }}
+        >
+          <textarea
+            value={feedback}
+            onChange={(event) => {
+              setFeedback(event.target.value);
+              setFeedbackError("");
+              setFeedbackMessage("");
+            }}
+            maxLength={2000}
+            rows={4}
+            placeholder="Write anything you would like us to know..."
+            className="w-full resize-none border border-ink/15 bg-white p-3 text-xs leading-5 outline-none placeholder:text-ink/30 focus:border-cinnabar"
+          />
+          <div className="mt-2 flex items-center justify-between gap-3">
+            <span className="text-[9px] font-semibold text-ink/40">
+              {feedback.length} / 2000
+            </span>
+            <button
+              type="submit"
+              disabled={submittingFeedback || !feedback.trim()}
+              className="min-h-10 bg-ink px-4 text-[10px] font-bold text-white disabled:opacity-45"
+            >
+              {submittingFeedback ? "Sending..." : "Send feedback"}
+            </button>
+          </div>
+          {feedbackError && (
+            <p className="mt-3 text-[10px] leading-4 text-cinnabar">{feedbackError}</p>
+          )}
+          {feedbackMessage && (
+            <p className="mt-3 flex items-center gap-2 text-[10px] font-bold text-[#34735a]">
+              <Check className="h-3.5 w-3.5" />
+              {feedbackMessage}
+            </p>
+          )}
+        </form>
+      </section>
       <Link href="/" className="flex items-center justify-between border border-ink/15 bg-paper p-4 text-xs font-bold">
         About China Travel Agent
         <ArrowRight className="h-4 w-4" />
@@ -2077,13 +2172,28 @@ function GuideSheet({ onClose }: { onClose: () => void }) {
         <p className="mt-4 text-xs leading-5 text-ink/50">
           For tomorrow&apos;s Forbidden City visit, a guide can adapt the history and route to your pace.
         </p>
-        <div className="mt-5 flex items-center gap-4 border border-ink/15 bg-white p-4">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#dbe2d2] font-display text-lg font-black">LX</span>
-          <div className="flex-1">
-            <p className="text-xs font-bold">Li Xian · Beijing</p>
-            <p className="mt-1 text-[10px] text-ink/45">English · History · Family friendly</p>
-            <p className="mt-2 text-[10px] font-bold text-[#34735a]">★ 4.9 · Available tomorrow 09:00</p>
-            <p className="mt-2 text-[10px] font-bold text-cinnabar">WhatsApp: chinabuddy</p>
+        <div className="mt-5 border border-ink/15 bg-white p-4">
+          <div className="flex items-center gap-3">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#dbe2d2] font-display text-lg font-black">LX</span>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-bold">Li Xian · Beijing</p>
+              <p className="mt-1 text-[10px] text-ink/45">English · History · Family friendly</p>
+              <p className="mt-2 text-[10px] font-bold text-[#34735a]">★ 4.9 · Available tomorrow 09:00</p>
+            </div>
+          </div>
+          <div className="mt-4 flex items-center gap-4 border-t border-ink/10 pt-4">
+            <Image
+              src="/whatsapp.jpeg"
+              width={191}
+              height={192}
+              alt="WhatsApp QR code for chinabuddy"
+              className="h-24 w-24 shrink-0 border border-ink/10 object-cover"
+            />
+            <div className="min-w-0">
+              <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-ink/45">Contact on WhatsApp</p>
+              <p className="mt-1 font-display text-lg font-black text-cinnabar">chinabuddy</p>
+              <p className="mt-1 text-[10px] leading-4 text-ink/50">Scan the code or search this handle in WhatsApp.</p>
+            </div>
           </div>
         </div>
         <p className="mt-3 text-center text-[9px] leading-4 text-ink/35">

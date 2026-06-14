@@ -1,5 +1,4 @@
 import {
-  ArrowRight,
   Bot,
   Camera,
   Check,
@@ -19,6 +18,7 @@ import {
   WalletCards,
   Wifi,
 } from "lucide-react";
+import Image from "next/image";
 import type { MarketingLanguage } from "./Header";
 
 const stagesEn = [
@@ -335,10 +335,27 @@ export function HumanGuideSection({ lang = "en" }: { lang?: MarketingLanguage })
             </div>
           </div>
 
-          <button className="mt-4 flex w-full items-center justify-between bg-ink p-4 text-left text-xs font-bold text-white transition hover:bg-[#34342f]">
-            {zh ? "查看 3 位匹配的本地向导" : "See 3 matched local guides"}
-            <ArrowRight className="h-4 w-4" />
-          </button>
+          <div className="mt-4 flex items-center gap-5 border border-ink/15 bg-white p-4">
+            <Image
+              src="/whatsapp.jpeg"
+              width={191}
+              height={192}
+              alt={zh ? "添加 chinabuddy 的 WhatsApp 二维码" : "WhatsApp QR code for chinabuddy"}
+              className="h-28 w-28 shrink-0 border border-ink/10 object-cover"
+            />
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-ink/40">
+                {zh ? "直接联系本地向导" : "Contact your local guide"}
+              </p>
+              <p className="mt-2 font-display text-xl font-black text-ink">
+                WhatsApp
+              </p>
+              <p className="mt-1 text-sm font-bold text-cinnabar">chinabuddy</p>
+              <p className="mt-2 text-[10px] leading-4 text-ink/50">
+                {zh ? "扫描二维码或在 WhatsApp 中搜索账号。" : "Scan the code or search this handle in WhatsApp."}
+              </p>
+            </div>
+          </div>
           <p className="mt-4 text-center text-[10px] leading-4 text-ink/40">
             {zh ? "只有在你确认后，才会分享行程与无障碍偏好。" : "Your itinerary and accessibility preferences are only shared after approval."}
           </p>

@@ -25,10 +25,14 @@ export default function Hero({ lang = "en" }: { lang?: MarketingLanguage }) {
         <div className="relative z-10 max-w-3xl">
           <div className="reveal-up mb-8 inline-flex items-center gap-2 rounded-full border border-ink/15 bg-white/70 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-ink backdrop-blur">
             <span className="h-2 w-2 rounded-full bg-cinnabar" />
-            {zh ? "你在中国旅行时的本地智能层" : "Your local intelligence layer in China"}
+            {zh ? "你在中国旅行时的本地智能体" : "Your local intelligence agent in China"}
           </div>
 
-          <h1 className="reveal-up text-balance font-display text-[clamp(3.8rem,8vw,8.3rem)] font-black leading-[0.82] tracking-[-0.065em] text-ink [animation-delay:80ms]">
+          <h1
+            className={`reveal-up text-balance font-display font-black leading-[0.82] tracking-[-0.065em] text-ink [animation-delay:80ms] ${
+              zh ? "text-[clamp(3rem,6vw,6.5rem)]" : "text-[clamp(3.8rem,8vw,8.3rem)]"
+            }`}
+          >
             {zh ? "在中国，" : "China,"}
             <span className="block text-cinnabar">{zh ? "带着上下文旅行。" : "with context."}</span>
           </h1>
