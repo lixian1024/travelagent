@@ -87,30 +87,25 @@ function FAQItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border-b border-gray-100 last:border-0">
+    <div className="border-b border-[#ebebeb] last:border-0">
       <button
-        className="w-full text-left py-4 flex items-start justify-between gap-4"
+        className="w-full text-left py-5 flex items-start justify-between gap-4 group"
         onClick={() => setOpen(!open)}
       >
-        <span className="font-medium text-gray-900 text-sm md:text-base">
+        <span className="font-medium text-[#222] text-sm md:text-base group-hover:text-[#FF385C] transition-colors">
           {q}
         </span>
         <svg
-          className={`w-5 h-5 text-gray-400 shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`w-5 h-5 text-[#717171] shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
       {open && (
-        <p className="pb-4 text-gray-600 text-sm leading-relaxed">{a}</p>
+        <p className="pb-5 text-[#717171] text-sm leading-relaxed">{a}</p>
       )}
     </div>
   );
@@ -118,26 +113,25 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 
 export default function FAQ() {
   return (
-    <section id="faq" className="py-20 bg-white">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="faq" className="py-20 bg-[#f7f7f7]">
+      <div className="max-w-3xl mx-auto px-6 lg:px-10">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#222] mb-4">
             Essential Travel Tips
           </h2>
-          <p className="text-gray-600 max-w-xl mx-auto">
-            Everything you need to know before visiting China. From internet
-            access to payments, we&apos;ve got you covered.
+          <p className="text-[#717171] max-w-xl mx-auto">
+            Everything you need to know before visiting China.
           </p>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-6">
           {faqs.map((section) => (
             <div
               key={section.category}
-              className="bg-gray-50 rounded-2xl p-6 md:p-8"
+              className="bg-white rounded-2xl p-6 md:p-8 border border-[#ebebeb]"
             >
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <span className="text-2xl">{section.icon}</span>
+              <h3 className="text-base font-semibold text-[#222] mb-2 flex items-center gap-2.5">
+                <span className="text-xl">{section.icon}</span>
                 {section.category}
               </h3>
               <div>

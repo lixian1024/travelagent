@@ -1,18 +1,36 @@
 "use client";
 
 import { Menu, X } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
-const navLinks = [
-  { href: "#journey", label: "How it works" },
-  { href: "#agent", label: "Live agent" },
-  { href: "#context", label: "Why context" },
-  { href: "#services", label: "Local services" },
-  { href: "#guides", label: "Local guides" },
-];
+export type MarketingLanguage = "en" | "zh";
 
-export default function Header() {
+const copy = {
+  en: {
+    brand: "China Travel",
+    subBrand: "Local Agent",
+    nav: ["How it works", "Live agent", "Why context", "Local services", "Local guides"],
+    open: "Open the app",
+    menu: "Open menu",
+    close: "Close menu",
+  },
+  zh: {
+    brand: "中国旅行",
+    subBrand: "数字本地向导",
+    nav: ["如何工作", "实时 Agent", "上下文优势", "本地服务", "真人向导"],
+    open: "打开应用",
+    menu: "打开菜单",
+    close: "关闭菜单",
+  },
+} satisfies Record<MarketingLanguage, Record<string, string | string[]>>;
+
+const navHrefs = ["#journey", "#agent", "#context", "#services", "#guides"];
+
+export default function Header({ lang = "en" }: { lang?: MarketingLanguage }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const text = copy[lang];
+  const navLinks = navHrefs.map((href, index) => ({ href, label: text.nav[index] }));
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-ink/10 bg-paper/90 backdrop-blur-xl">
@@ -23,10 +41,10 @@ export default function Header() {
           </span>
           <span className="leading-none">
             <strong className="block font-display text-base tracking-tight text-ink">
-              China Travel
+              {text.brand}
             </strong>
             <span className="mt-1 block text-[9px] font-bold uppercase tracking-[0.25em] text-ink/45">
-              Local Agent
+              {text.subBrand}
             </span>
           </span>
         </a>
@@ -44,21 +62,23 @@ export default function Header() {
         </nav>
 
         <div className="hidden items-center gap-4 xl:flex">
-          <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-ink/40">
-            EN / 中文
-          </span>
+          <div className="flex items-center text-[10px] font-bold uppercase tracking-[0.16em]">
+            <Link href="/" className={lang === "en" ? "text-cinnabar" : "text-ink/40 hover:text-ink"}>EN</Link>
+            <span className="px-2 text-ink/25">/</span>
+            <Link href="/zh" className={lang === "zh" ? "text-cinnabar" : "text-ink/40 hover:text-ink"}>中文</Link>
+          </div>
           <a
             href="/app"
             className="bg-ink px-5 py-3 text-xs font-bold text-white transition hover:bg-cinnabar"
           >
-            Open the app
+            {text.open}
           </a>
         </div>
 
         <button
           type="button"
           className="flex h-11 w-11 items-center justify-center border border-ink/15 md:hidden"
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-label={menuOpen ? text.close as string : text.menu as string}
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((current) => !current)}
         >
@@ -82,12 +102,16 @@ export default function Header() {
                 {link.label}
               </a>
             ))}
+            <div className="mt-5 flex border border-ink/15 p-1 text-center text-xs font-bold">
+              <Link href="/" className={`flex-1 px-4 py-3 ${lang === "en" ? "bg-ink text-white" : "text-ink"}`}>EN</Link>
+              <Link href="/zh" className={`flex-1 px-4 py-3 ${lang === "zh" ? "bg-ink text-white" : "text-ink"}`}>中文</Link>
+            </div>
             <a
               href="/app"
               onClick={() => setMenuOpen(false)}
               className="mt-5 bg-cinnabar px-5 py-4 text-center text-sm font-bold text-white"
             >
-              Open the app
+              {text.open}
             </a>
           </div>
         </nav>

@@ -81,6 +81,52 @@ button {
   animation: sheet-in 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* App screens favor legibility over the lighter editorial treatment used by the landing page. */
+.travel-app .text-\[8px\] {
+  font-size: 9px !important;
+}
+
+.travel-app .text-\[9px\] {
+  font-size: 10px !important;
+}
+
+.travel-app .text-ink\/30,
+.travel-app .text-ink\/35 {
+  color: color-mix(in srgb, var(--ink) 72%, transparent) !important;
+}
+
+.travel-app .text-ink\/40 {
+  color: color-mix(in srgb, var(--ink) 76%, transparent) !important;
+}
+
+.travel-app .text-ink\/45,
+.travel-app .text-ink\/50,
+.travel-app .text-ink\/55,
+.travel-app .text-ink\/60 {
+  color: color-mix(in srgb, var(--ink) 82%, transparent) !important;
+}
+
+.travel-app .text-white\/35,
+.travel-app .text-white\/40 {
+  color: rgb(255 255 255 / 0.78) !important;
+}
+
+.travel-app .text-white\/45,
+.travel-app .text-white\/50,
+.travel-app .text-white\/55,
+.travel-app .text-white\/60 {
+  color: rgb(255 255 255 / 0.86) !important;
+}
+
+.travel-app [class*="placeholder:text-ink/25"]::placeholder,
+.travel-app [class*="placeholder:text-ink/30"]::placeholder {
+  color: color-mix(in srgb, var(--ink) 68%, transparent) !important;
+}
+
+.travel-app button:disabled {
+  color: color-mix(in srgb, var(--ink) 66%, transparent);
+}
+
 @keyframes reveal-up {
   from {
     opacity: 0;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const popularCities = [
   "Beijing",
@@ -25,6 +25,32 @@ export default function TripPlannerForm() {
   const [submitted, setSubmitted] = useState(false);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
   const [customCity, setCustomCity] = useState("");
+  const [draftInterests, setDraftInterests] = useState("");
+  const [draftQuestions, setDraftQuestions] = useState("");
+
+  useEffect(() => {
+    function applyDraft(event?: Event) {
+      const eventDraft =
+        event instanceof CustomEvent
+          ? (event.detail as {
+              cities?: string[];
+              interests?: string;
+              questions?: string;
+            })
+          : null;
+      const storedDraft = sessionStorage.getItem("china-trip-draft");
+      const draft = eventDraft ?? (storedDraft ? JSON.parse(storedDraft) : null);
+
+      if (!draft) return;
+      if (Array.isArray(draft.cities)) setSelectedCities(draft.cities);
+      if (typeof draft.interests === "string") setDraftInterests(draft.interests);
+      if (typeof draft.questions === "string") setDraftQuestions(draft.questions);
+    }
+
+    applyDraft();
+    window.addEventListener("china-trip-draft", applyDraft);
+    return () => window.removeEventListener("china-trip-draft", applyDraft);
+  }, []);
 
   function toggleCity(city: string) {
     setSelectedCities((prev) =>
@@ -71,20 +97,24 @@ export default function TripPlannerForm() {
 
   if (submitted) {
     return (
-      <section id="plan" className="py-20 bg-gray-50">
-        <div className="max-w-2xl mx-auto px-4 text-center">
-          <div className="bg-white rounded-3xl shadow-lg p-12">
-            <div className="text-5xl mb-4">🎉</div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">
-              Trip Request Submitted!
+      <section id="plan" className="py-20 bg-white">
+        <div className="max-w-2xl mx-auto px-6 text-center">
+          <div className="border border-[#ebebeb] rounded-2xl p-12">
+            <div className="w-16 h-16 bg-[#FFF0F3] rounded-full flex items-center justify-center mx-auto mb-5">
+              <svg className="w-8 h-8 text-[#FF385C]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-[#222] mb-3">
+              Request Submitted!
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-[#717171] mb-6">
               We&apos;ve received your travel plan. We&apos;ll get back to you
-              within 24 hours with a personalized itinerary and recommendations.
+              within 24 hours with a personalized itinerary.
             </p>
             <button
               onClick={() => setSubmitted(false)}
-              className="text-red-600 font-medium hover:underline"
+              className="text-[#FF385C] font-semibold hover:underline"
             >
               Submit another request
             </button>
@@ -95,52 +125,49 @@ export default function TripPlannerForm() {
   }
 
   return (
-    <section id="plan" className="py-20 bg-gray-50">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="plan" className="py-20 bg-white">
+      <div className="max-w-3xl mx-auto px-6 lg:px-10">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#222] mb-4">
             Plan Your China Trip
           </h2>
-          <p className="text-gray-600 max-w-xl mx-auto">
-            Tell us about your travel plans and we&apos;ll help you prepare
-            everything you need for an amazing trip to China.
+          <p className="text-[#717171] max-w-xl mx-auto">
+            Share your travel plans and we&apos;ll help you prepare everything
+            for an amazing experience in China.
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-3xl shadow-lg p-8 md:p-10 space-y-8"
+          className="border border-[#ebebeb] rounded-2xl p-8 md:p-10 space-y-10"
         >
           {/* Personal Info */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <span className="w-7 h-7 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-sm font-bold">
-                1
-              </span>
+            <h3 className="text-base font-semibold text-[#222] mb-5 pb-3 border-b border-[#ebebeb]">
               About You
             </h3>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 gap-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Your Name *
+                <label className="block text-sm font-medium text-[#484848] mb-2">
+                  Your Name
                 </label>
                 <input
                   type="text"
                   name="name"
                   required
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition"
+                  className="w-full border border-[#b0b0b0] rounded-lg px-4 py-3 text-[#222] focus:border-[#222] focus:ring-1 focus:ring-[#222] outline-none transition placeholder:text-[#b0b0b0]"
                   placeholder="John Doe"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email *
+                <label className="block text-sm font-medium text-[#484848] mb-2">
+                  Email
                 </label>
                 <input
                   type="email"
                   name="email"
                   required
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition"
+                  className="w-full border border-[#b0b0b0] rounded-lg px-4 py-3 text-[#222] focus:border-[#222] focus:ring-1 focus:ring-[#222] outline-none transition placeholder:text-[#b0b0b0]"
                   placeholder="john@example.com"
                 />
               </div>
@@ -149,42 +176,39 @@ export default function TripPlannerForm() {
 
           {/* Travel Dates */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <span className="w-7 h-7 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-sm font-bold">
-                2
-              </span>
+            <h3 className="text-base font-semibold text-[#222] mb-5 pb-3 border-b border-[#ebebeb]">
               Travel Dates
             </h3>
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-3 gap-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Arrival Date *
+                <label className="block text-sm font-medium text-[#484848] mb-2">
+                  Arrival Date
                 </label>
                 <input
                   type="date"
                   name="arrivalDate"
                   required
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition"
+                  className="w-full border border-[#b0b0b0] rounded-lg px-4 py-3 text-[#222] focus:border-[#222] focus:ring-1 focus:ring-[#222] outline-none transition"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Departure Date *
+                <label className="block text-sm font-medium text-[#484848] mb-2">
+                  Departure Date
                 </label>
                 <input
                   type="date"
                   name="departureDate"
                   required
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition"
+                  className="w-full border border-[#b0b0b0] rounded-lg px-4 py-3 text-[#222] focus:border-[#222] focus:ring-1 focus:ring-[#222] outline-none transition"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Number of Travelers
+                <label className="block text-sm font-medium text-[#484848] mb-2">
+                  Travelers
                 </label>
                 <select
                   name="travelers"
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition bg-white"
+                  className="w-full border border-[#b0b0b0] rounded-lg px-4 py-3 text-[#222] focus:border-[#222] focus:ring-1 focus:ring-[#222] outline-none transition bg-white"
                 >
                   <option value="1">1 person</option>
                   <option value="2">2 people</option>
@@ -198,11 +222,8 @@ export default function TripPlannerForm() {
 
           {/* Cities */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <span className="w-7 h-7 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-sm font-bold">
-                3
-              </span>
-              Cities You Want to Visit
+            <h3 className="text-base font-semibold text-[#222] mb-5 pb-3 border-b border-[#ebebeb]">
+              Destinations
             </h3>
             <div className="flex flex-wrap gap-2 mb-4">
               {popularCities.map((city) => (
@@ -210,17 +231,17 @@ export default function TripPlannerForm() {
                   key={city}
                   type="button"
                   onClick={() => toggleCity(city)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  className={`px-4 py-2.5 rounded-full text-sm font-medium transition-all border ${
                     selectedCities.includes(city)
-                      ? "bg-red-600 text-white shadow-md"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      ? "bg-[#222] text-white border-[#222]"
+                      : "bg-white text-[#484848] border-[#dddddd] hover:border-[#222]"
                   }`}
                 >
                   {city}
                 </button>
               ))}
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <input
                 type="text"
                 value={customCity}
@@ -231,19 +252,19 @@ export default function TripPlannerForm() {
                     addCustomCity();
                   }
                 }}
-                className="flex-1 border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition"
+                className="flex-1 border border-[#b0b0b0] rounded-lg px-4 py-3 text-[#222] focus:border-[#222] focus:ring-1 focus:ring-[#222] outline-none transition placeholder:text-[#b0b0b0]"
                 placeholder="Add another city..."
               />
               <button
                 type="button"
                 onClick={addCustomCity}
-                className="bg-gray-100 text-gray-700 px-5 py-3 rounded-xl hover:bg-gray-200 transition font-medium"
+                className="border border-[#222] text-[#222] px-5 py-3 rounded-lg hover:bg-[#f7f7f7] transition font-medium text-sm"
               >
                 Add
               </button>
             </div>
             {selectedCities.length > 0 && (
-              <p className="mt-3 text-sm text-gray-500">
+              <p className="mt-3 text-sm text-[#717171]">
                 Selected: {selectedCities.join(", ")}
               </p>
             )}
@@ -251,18 +272,15 @@ export default function TripPlannerForm() {
 
           {/* Guide & Interests */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <span className="w-7 h-7 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-sm font-bold">
-                4
-              </span>
+            <h3 className="text-base font-semibold text-[#222] mb-5 pb-3 border-b border-[#ebebeb]">
               Preferences
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[#484848] mb-3">
                   Do you need a local guide?
                 </label>
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-3">
                   {[
                     { value: "yes", label: "Yes, I need a guide" },
                     { value: "maybe", label: "Maybe, tell me more" },
@@ -270,16 +288,16 @@ export default function TripPlannerForm() {
                   ].map((option) => (
                     <label
                       key={option.value}
-                      className="flex items-center gap-2 cursor-pointer"
+                      className="flex items-center gap-2.5 cursor-pointer border border-[#dddddd] rounded-lg px-4 py-3 hover:border-[#222] transition has-[:checked]:border-[#222] has-[:checked]:bg-[#f7f7f7]"
                     >
                       <input
                         type="radio"
                         name="needGuide"
                         value={option.value}
                         defaultChecked={option.value === "maybe"}
-                        className="w-4 h-4 text-red-600 focus:ring-red-500"
+                        className="w-4 h-4 accent-[#222]"
                       />
-                      <span className="text-sm text-gray-700">
+                      <span className="text-sm text-[#484848]">
                         {option.label}
                       </span>
                     </label>
@@ -287,14 +305,16 @@ export default function TripPlannerForm() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[#484848] mb-2">
                   What are you interested in?
                 </label>
                 <input
                   type="text"
                   name="interests"
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition"
-                  placeholder="e.g., History, Food, Nature, Shopping, Nightlife, Photography..."
+                  value={draftInterests}
+                  onChange={(event) => setDraftInterests(event.target.value)}
+                  className="w-full border border-[#b0b0b0] rounded-lg px-4 py-3 text-[#222] focus:border-[#222] focus:ring-1 focus:ring-[#222] outline-none transition placeholder:text-[#b0b0b0]"
+                  placeholder="History, Food, Nature, Shopping, Nightlife, Photography..."
                 />
               </div>
             </div>
@@ -302,23 +322,22 @@ export default function TripPlannerForm() {
 
           {/* Questions */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <span className="w-7 h-7 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-sm font-bold">
-                5
-              </span>
-              Your Questions
+            <h3 className="text-base font-semibold text-[#222] mb-5 pb-3 border-b border-[#ebebeb]">
+              Questions
             </h3>
             <textarea
               name="questions"
               rows={4}
-              className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition resize-none"
-              placeholder="Any questions about traveling in China? e.g., How to access Google/WhatsApp? What apps do I need? How to pay without cash? How to get a SIM card?"
+              value={draftQuestions}
+              onChange={(event) => setDraftQuestions(event.target.value)}
+              className="w-full border border-[#b0b0b0] rounded-lg px-4 py-3 text-[#222] focus:border-[#222] focus:ring-1 focus:ring-[#222] outline-none transition resize-none placeholder:text-[#b0b0b0]"
+              placeholder="Any questions about China? e.g., How to access Google? What apps do I need? How do I pay without cash?"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-red-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-red-700 transition-colors shadow-lg shadow-red-600/20"
+            className="w-full bg-[#FF385C] text-white py-4 rounded-lg font-semibold text-lg hover:bg-[#E31C5F] transition-colors"
           >
             Submit My Trip Plan
           </button>

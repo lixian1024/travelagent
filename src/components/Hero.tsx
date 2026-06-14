@@ -7,31 +7,36 @@ import {
   ShieldCheck,
   Wifi,
 } from "lucide-react";
+import type { MarketingLanguage } from "./Header";
 
-const readiness = [
-  { label: "eSIM connected", icon: Wifi },
-  { label: "Alipay verified", icon: ShieldCheck },
-  { label: "Hotel saved in Chinese", icon: MapPin },
-];
-
-export default function Hero() {
+export default function Hero({ lang = "en" }: { lang?: MarketingLanguage }) {
+  const zh = lang === "zh";
+  const readiness = [
+    { label: zh ? "eSIM 已连接" : "eSIM connected", icon: Wifi },
+    { label: zh ? "支付宝已验证" : "Alipay verified", icon: ShieldCheck },
+    { label: zh ? "已保存酒店中文地址" : "Hotel saved in Chinese", icon: MapPin },
+  ];
+  const steps = zh
+    ? [["01", "连接旅行 eSIM", "已就绪"], ["02", "打开支付宝并完成测试", "已验证"], ["03", "按指示前往网约车 P3 上车点", "12 分钟"], ["04", "向司机展示酒店地址卡", "已保存"]]
+    : [["01", "Connect to your travel eSIM", "Ready"], ["02", "Open Alipay and run a test", "Verified"], ["03", "Follow signs to Didi pickup P3", "12 min"], ["04", "Show driver the hotel card", "Saved"]];
   return (
     <section className="hero-grid relative overflow-hidden border-b border-ink/10 bg-paper pt-24">
       <div className="mx-auto grid min-h-[760px] max-w-[1440px] items-center gap-16 px-5 py-16 md:px-10 lg:grid-cols-[1.04fr_0.96fr] lg:px-16 lg:py-24">
         <div className="relative z-10 max-w-3xl">
           <div className="reveal-up mb-8 inline-flex items-center gap-2 rounded-full border border-ink/15 bg-white/70 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-ink backdrop-blur">
             <span className="h-2 w-2 rounded-full bg-cinnabar" />
-            Your local intelligence layer in China
+            {zh ? "你在中国旅行时的本地智能层" : "Your local intelligence layer in China"}
           </div>
 
           <h1 className="reveal-up text-balance font-display text-[clamp(3.8rem,8vw,8.3rem)] font-black leading-[0.82] tracking-[-0.065em] text-ink [animation-delay:80ms]">
-            China,
-            <span className="block text-cinnabar">with context.</span>
+            {zh ? "在中国，" : "China,"}
+            <span className="block text-cinnabar">{zh ? "带着上下文旅行。" : "with context."}</span>
           </h1>
 
           <p className="reveal-up mt-9 max-w-2xl text-lg leading-8 text-ink/65 md:text-xl [animation-delay:160ms]">
-            A digital local guide that stays with you from pre-flight setup to the
-            street, the station, the restaurant, and the moment something stops working.
+            {zh
+              ? "从行前配置，到街头、车站和餐厅，再到某项服务突然失效时，它始终陪在身边，成为你的数字本地向导。"
+              : "A digital local guide that stays with you from pre-flight setup to the street, the station, the restaurant, and the moment something stops working."}
           </p>
 
           <div className="reveal-up mt-10 flex flex-col gap-3 sm:flex-row [animation-delay:240ms]">
@@ -39,19 +44,21 @@ export default function Hero() {
                 href="/app"
                 className="group flex min-h-14 items-center justify-center gap-3 bg-ink px-7 text-sm font-bold text-white transition hover:bg-cinnabar"
               >
-                Open the app prototype
+                {zh ? "打开应用原型" : "Open the app prototype"}
               <ArrowDownRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:translate-y-1" />
             </a>
             <a
               href="#journey"
               className="flex min-h-14 items-center justify-center border border-ink/25 bg-white/50 px-7 text-sm font-bold text-ink transition hover:border-ink hover:bg-white"
             >
-              See how it travels with you
+              {zh ? "了解它如何一路陪伴" : "See how it travels with you"}
             </a>
           </div>
 
           <div className="reveal-up mt-12 flex flex-wrap gap-x-7 gap-y-3 border-t border-ink/15 pt-6 text-xs font-semibold text-ink/55 [animation-delay:320ms]">
-            {["No new context every chat", "Offline fallbacks", "Human help when it matters"].map(
+            {(zh
+              ? ["无需每次重复背景", "离线备用方案", "需要时连接真人"]
+              : ["No new context every chat", "Offline fallbacks", "Human help when it matters"]).map(
               (item) => (
                 <span key={item} className="flex items-center gap-2">
                   <Check className="h-3.5 w-3.5 text-cinnabar" />
@@ -73,9 +80,9 @@ export default function Hero() {
                 <div className="flex items-start justify-between border-b border-white/15 pb-6">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">
-                      Beijing · 08:42 local
+                      {zh ? "北京 · 当地时间 08:42" : "Beijing · 08:42 local"}
                     </p>
-                    <p className="mt-2 font-display text-2xl font-bold">Arrival mode</p>
+                    <p className="mt-2 font-display text-2xl font-bold">{zh ? "抵达模式" : "Arrival mode"}</p>
                   </div>
                   <div className="flex h-11 w-11 items-center justify-center rounded-full bg-cinnabar">
                     <Plane className="h-5 w-5" />
@@ -83,19 +90,14 @@ export default function Hero() {
                 </div>
 
                 <div className="mt-8">
-                  <p className="text-sm text-white/50">Good morning, Alex.</p>
+                  <p className="text-sm text-white/50">{zh ? "早上好，Alex。" : "Good morning, Alex."}</p>
                   <h2 className="mt-2 max-w-sm font-display text-4xl font-bold leading-tight tracking-tight">
-                    You landed. Here&apos;s your first hour.
+                    {zh ? "你已落地，这是抵达后的第一小时。" : "You landed. Here's your first hour."}
                   </h2>
                 </div>
 
                 <div className="mt-8 space-y-2">
-                  {[
-                    ["01", "Connect to your travel eSIM", "Ready"],
-                    ["02", "Open Alipay and run a test", "Verified"],
-                    ["03", "Follow signs to Didi pickup P3", "12 min"],
-                    ["04", "Show driver the hotel card", "Saved"],
-                  ].map(([number, label, status], index) => (
+                  {steps.map(([number, label, status], index) => (
                     <div
                       key={number}
                       className={`grid grid-cols-[34px_1fr_auto] items-center gap-3 border p-4 ${
@@ -118,9 +120,9 @@ export default function Hero() {
                     <Navigation className="h-4 w-4" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold">Next best action</p>
+                    <p className="text-xs font-bold">{zh ? "下一步最佳行动" : "Next best action"}</p>
                     <p className="mt-0.5 text-xs text-ink/60">
-                      Walk 180m to the official ride-hailing zone.
+                      {zh ? "步行 180 米前往官方网约车上车区。" : "Walk 180m to the official ride-hailing zone."}
                     </p>
                   </div>
                 </div>
@@ -130,7 +132,7 @@ export default function Hero() {
 
           <div className="absolute -bottom-7 -left-5 hidden -rotate-2 border border-ink/15 bg-[#f1dfbd] p-5 shadow-lg md:block">
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-ink/45">
-              Pre-flight status
+              {zh ? "行前准备状态" : "Pre-flight status"}
             </p>
             <div className="mt-3 space-y-2">
               {readiness.map(({ label, icon: Icon }) => (
