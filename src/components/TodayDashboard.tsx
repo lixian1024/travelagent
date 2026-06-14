@@ -698,7 +698,7 @@ export default function TodayDashboard({
                   type="date"
                   value={draft.date}
                   onChange={(event) => setDraft({ ...draft, date: event.target.value })}
-                  className="mt-2 min-h-11 w-full border border-ink/15 bg-white px-3 text-xs text-ink outline-none"
+                  className="mt-2 min-h-12 w-full border border-ink/15 bg-white px-3 text-base font-bold text-ink outline-none"
                 />
               </label>
               <label className="text-[9px] font-bold uppercase tracking-wider text-ink/40">
@@ -708,7 +708,7 @@ export default function TodayDashboard({
                   type="time"
                   value={draft.time}
                   onChange={(event) => setDraft({ ...draft, time: event.target.value })}
-                  className="mt-2 min-h-11 w-full border border-ink/15 bg-white px-3 text-xs text-ink outline-none"
+                  className="mt-2 min-h-12 w-full border border-ink/15 bg-white px-3 text-base font-bold text-ink outline-none"
                 />
               </label>
             </div>
@@ -746,7 +746,7 @@ export default function TodayDashboard({
                       category: event.target.value as ItineraryItem["category"],
                     })
                   }
-                  className="mt-2 min-h-11 w-full border border-ink/15 bg-white px-3 text-xs normal-case tracking-normal text-ink outline-none"
+                  className="mt-2 min-h-12 w-full border border-ink/15 bg-white px-3 text-base font-bold normal-case tracking-normal text-ink outline-none"
                 >
                   <option value="attraction">Attraction</option>
                   <option value="transport">Transport</option>

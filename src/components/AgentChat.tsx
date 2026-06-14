@@ -187,11 +187,15 @@ export default function AgentChat({
   const [tracking, setTracking] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [speechPaused, setSpeechPaused] = useState(false);
+  const [speechLoading, setSpeechLoading] = useState(false);
   const [driverCardOpen, setDriverCardOpen] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const skipMessageLoad = useRef<string | null>(null);
   const watchId = useRef<number | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioUrlRef = useRef<string | null>(null);
+  const speechAbortRef = useRef<AbortController | null>(null);
   const lastStoryLocation = useRef<{ latitude: number; longitude: number } | null>(null);
   const currentLocation = useRef<{ latitude: number; longitude: number } | null>(null);
 
@@ -248,6 +252,9 @@ export default function AgentChat({
   useEffect(() => {
     return () => {
       if (watchId.current !== null) navigator.geolocation.clearWatch(watchId.current);
+      speechAbortRef.current?.abort();
+      audioRef.current?.pause();
+      if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
       window.speechSynthesis?.cancel();
     };
   }, []);
@@ -306,8 +313,10 @@ export default function AgentChat({
       watchId.current = null;
     }
     window.speechSynthesis?.cancel();
+    audioRef.current?.pause();
     setSpeaking(false);
     setSpeechPaused(false);
+    setSpeechLoading(false);
     setTracking(false);
     setNewStoryReady(false);
     setLocationStatus("");
@@ -545,10 +554,7 @@ export default function AgentChat({
     );
   }
 
-  function speakLatest() {
-    const text = [...messages]
-      .reverse()
-      .find((item) => item.role === "assistant" && item.content.trim())?.content;
+  function speakWithDeviceVoice(text: string) {
     if (!text || !("speechSynthesis" in window)) {
       setError("Speech playback is not available in this browser.");
       return;
@@ -573,24 +579,113 @@ export default function AgentChat({
     window.speechSynthesis.speak(utterance);
   }
 
+  async function speakLatest() {
+    const text = [...messages]
+      .reverse()
+      .find((item) => item.role === "assistant" && item.content.trim())?.content;
+
+    if (!text) {
+      setError("No guide script is ready yet.");
+      return;
+    }
+
+    stopSpeech();
+    const controller = new AbortController();
+    speechAbortRef.current = controller;
+    setSpeechLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/agent/speech", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        const data = (await response.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(data?.error || "Natural voice playback is not available.");
+      }
+
+      const blob = await response.blob();
+      if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
+      const audioUrl = URL.createObjectURL(blob);
+      const audio = audioRef.current ?? new Audio();
+      audioRef.current = audio;
+      audioUrlRef.current = audioUrl;
+      audio.src = audioUrl;
+      audio.onended = () => {
+        setSpeaking(false);
+        setSpeechPaused(false);
+      };
+      audio.onerror = () => {
+        setSpeaking(false);
+        setSpeechPaused(false);
+        setError("Audio playback stopped. Tap play to try again.");
+      };
+      await audio.play();
+      setSpeaking(true);
+      setSpeechPaused(false);
+    } catch (speechError) {
+      if (speechError instanceof DOMException && speechError.name === "AbortError") {
+        return;
+      }
+      console.error("Qwen-TTS playback failed", speechError);
+      if (audioRef.current) {
+        audioRef.current.removeAttribute("src");
+        audioRef.current.load();
+      }
+      if (audioUrlRef.current) {
+        URL.revokeObjectURL(audioUrlRef.current);
+        audioUrlRef.current = null;
+      }
+      speakWithDeviceVoice(text);
+    } finally {
+      if (speechAbortRef.current === controller) speechAbortRef.current = null;
+      setSpeechLoading(false);
+    }
+  }
+
   function toggleSpeech() {
+    if (speechLoading) return;
     if (!speaking) {
-      speakLatest();
+      void speakLatest();
       return;
     }
     if (speechPaused) {
-      window.speechSynthesis.resume();
+      if (audioRef.current && audioUrlRef.current) {
+        void audioRef.current.play();
+      } else {
+        window.speechSynthesis.resume();
+      }
       setSpeechPaused(false);
     } else {
-      window.speechSynthesis.pause();
+      if (audioRef.current && audioUrlRef.current) {
+        audioRef.current.pause();
+      } else {
+        window.speechSynthesis.pause();
+      }
       setSpeechPaused(true);
     }
   }
 
   function stopSpeech() {
+    speechAbortRef.current?.abort();
+    speechAbortRef.current = null;
+    audioRef.current?.pause();
+    if (audioRef.current) {
+      audioRef.current.removeAttribute("src");
+      audioRef.current.load();
+    }
+    if (audioUrlRef.current) {
+      URL.revokeObjectURL(audioUrlRef.current);
+      audioUrlRef.current = null;
+    }
     window.speechSynthesis.cancel();
     setSpeaking(false);
     setSpeechPaused(false);
+    setSpeechLoading(false);
   }
 
   async function endSession() {
@@ -898,16 +993,18 @@ export default function AgentChat({
                   {speaking && !speechPaused ? (
                     <Pause className="h-4 w-4 text-cinnabar" />
                   ) : (
-                    <Play className="h-4 w-4 text-cinnabar" />
+                    <Play className={`h-4 w-4 text-cinnabar ${speechLoading ? "animate-pulse" : ""}`} />
                   )}
-                  {speaking && !speechPaused
+                  {speechLoading
+                    ? "Preparing guide voice"
+                    : speaking && !speechPaused
                     ? "Pause guide"
                     : speechPaused
                       ? "Resume guide"
                       : "Play latest guide"}
                 </span>
                 <span className="text-[8px] uppercase tracking-wider text-ink/40">
-                  device voice
+                  Jennifer voice
                 </span>
               </button>
               <button

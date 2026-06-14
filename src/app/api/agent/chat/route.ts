@@ -222,7 +222,7 @@ export async function POST(request: Request) {
     "Never ask for card numbers, PINs, SMS codes, passport numbers, or other secrets.",
     "When the screenshot contains useful text or an error, briefly explain what it means before the action.",
     sessionType === "sight"
-      ? "Reply in the user's language. Keep location introductions under 700 characters and other answers concise."
+      ? "Reply in the user's language. Keep location introductions under 550 characters and other answers concise."
       : "Reply in the user's language. Keep the entire answer under 300 characters. Be direct and calm.",
     enableSearch
       ? "Earlier attempts did not solve the issue. Use web search only for current or provider-specific facts, and keep the answer concise."

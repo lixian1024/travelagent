@@ -17,7 +17,6 @@ export default async function LoginPage({
   const configured = isSupabaseConfigured();
   const providers = {
     google: false,
-    facebook: false,
   };
 
   if (configured) {
@@ -37,10 +36,9 @@ export default async function LoginPage({
 
     if (response.ok) {
       const settings = (await response.json()) as {
-        external?: { google?: boolean; facebook?: boolean };
+        external?: { google?: boolean };
       };
       providers.google = settings.external?.google ?? false;
-      providers.facebook = settings.external?.facebook ?? false;
     }
   }
 

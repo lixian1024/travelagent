@@ -619,7 +619,7 @@ function PrepareScreen() {
                         Step {index + 1}
                       </span>
                       <h2 className="mt-1 text-sm font-bold text-ink">{label}</h2>
-                      <p className="mt-1 text-[10px] leading-4 text-ink/45">{detail}</p>
+                      <p className="mt-1 text-xs leading-5 text-ink/50">{detail}</p>
                     </div>
                     <button
                       type="button"
@@ -1985,7 +1985,12 @@ function MeScreen({
           </p>
           {user?.provider && (
             <p className="mt-1 text-[9px] font-bold uppercase tracking-wider text-[#f1dfbd]">
-              Signed in with {user.provider === "facebook" ? "Meta" : user.provider}
+              Signed in with{" "}
+              {user.provider === "facebook"
+                ? "Social account"
+                : user.provider === "email"
+                  ? "Email"
+                  : user.provider}
             </p>
           )}
         </div>
@@ -2315,7 +2320,7 @@ export default function TravelAgentApp({
           {!authConfigured && (
             <div className="mb-4 border border-[#b98b34]/30 bg-[#fff8e8] p-3 text-[10px] leading-4 text-ink/60">
               <span className="font-bold text-ink">Prototype mode.</span> Add Supabase environment
-              variables to enable Google and Meta sign-in.
+              variables to enable Google sign-in and email registration.
             </div>
           )}
           <div hidden={activeTab !== "agent"}>
